@@ -32,9 +32,8 @@ fn readFile(allocator: Allocator, file: []const u8) ![]const u8 {
 test "read file" {
   const allocator = heap.page_allocator;
 
-  const content: []const u8 = try readFile(allocator, "test.txt");
+  const content: []const u8 = try readFile(allocator, "test.bf");
 
-  try expect(content.len == 9);
   try expect(@TypeOf(content) == []const u8);
-  try expect(std.mem.eql(u8, content, "file file"));
+  try expect(std.mem.eql(u8, content, "+++++ +++++ >>++ >>++"));
 }
