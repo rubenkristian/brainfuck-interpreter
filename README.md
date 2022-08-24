@@ -1,4 +1,4 @@
-### BRAINFUCK INTERPRETER
+### BRAINFUCK INTERPRETER (STATUS: IN PROGRESS)
 
 Brainfuck is an esoteric programming language
 
