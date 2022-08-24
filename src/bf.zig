@@ -27,11 +27,21 @@ pub const Brainf = struct {
     }
   }
 
-  pub fn parse(self: *Brainf, source: []const u8) !void {
-
+  pub fn parse(self: *Brainf, token: []TOKEN) !void {
+    switch (token) {
+      TOKEN.NextPoint => return,
+      TOKEN.PrevPoint => return,
+      TOKEN.InValue => return,
+      TOKEN.DeValue => return,
+      TOKEN.Print => return,
+      TOKEN.Scan => return,
+      TOKEN.LoopClose => return,
+      TOKEN.LoopOpen => return,
+      else => continue,
+    }
   }
 
   pub fn Interpreter(self: *Brainf) !void {
-
+    
   }
 };
