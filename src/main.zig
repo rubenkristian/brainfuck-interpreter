@@ -11,5 +11,7 @@ pub fn main() !void {
     if (args.len > 1) {
         const file: []const u8 = args[1];
         std.debug.print("{s}", .{file});
+    } else {
+        std.log.warn("missing brainfuck file", .{});
     }
 }
