@@ -12,7 +12,11 @@ pub fn main() !void {
   if (args.len > 1) {
     const file: []const u8 = args[1];
     const content = try readFile(alloc, file);
-    std.debug.print("{s}", .{content});
+    
+    bf.Brainf.init(alloc);
+    const tokens = bf.Brainf.tokenize(content);
+
+    bf.Brainf.parse(tokens);
   } else {
     std.log.warn("missing brainfuck file", .{});
   }
