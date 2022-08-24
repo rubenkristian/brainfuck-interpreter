@@ -17,8 +17,14 @@ pub const Brainf = struct {
 
   }
 
-  pub fn tokenize(self: *Brainf) !void {
-    
+  // change source to token before parsing
+  pub fn tokenize(self: *Brainf, source: []const u8) ![]TOKEN {
+    for (source) |_, ch| {
+      switch (ch) {
+        // '+', '-', '>', '<', ',', '.', '[', ']' => 8,
+        // else => continue
+      }
+    }
   }
 
   pub fn parse(self: *Brainf, source: []const u8) !void {
