@@ -1,12 +1,15 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 const heap = std.heap;
 const bf = @import("./bf.zig");
 
-fn main() !void {
-    var buffer: [1000]u8 = undefined;
-    var fba = heap.FixedBufferAllocator.init(&buffer);
+pub fn main() !void {
+    const alloc: Allocator = heap.page_allocator;
+    var args = try std.process.argsAlloc(alloc);
+    defer alloc.free(args);
 
-    const allocator = fba.allocator();
-
-    const point_list = try allocator.alloc(u8, 1000);
+    if (args.len > 1) {
+        const file: []const u8 = args[1];
+        std.debug.print("{s}", .{file});
+    }
 }
