@@ -4,17 +4,38 @@ const Allocator = std.mem.Allocator;
 const TOKEN = enum { NextPoint, PrevPoint, InValue, DeValue, Print, Scan, LoopOpen, LoopClose };
 
 pub const Brainf = struct {
+  pointer: [1024]u8,
+  allocator: Allocator,
+  currLoc: u16 = 0,
 
-  pub const pointer: [100]u8;
-  pub var val: u8;
-  var tree: []TOKEN;
-
-  pub fn init(allocator: Allocator) !void {
-    
+  pub fn init(allocator: Allocator) !Brainf {
+    return Brainf{
+      .pointer = allocator.alloc(u8, 1024),
+    };
   }
 
-  pub fn deinit(self: *Brainf) !void {
+  fn nextPointer(self: *Brainf) !void {
+    self.currLoc += 1;
+  }
 
+  fn prevPointer(self: *Brainf) !void {
+    self.currLoc -= 1;
+  }
+
+  fn increaseCurrPointer(self: *Brainf) !void {
+    self.pointer[self.currLoc].* += 1;
+  }
+
+  fn decreaseCurrPointer(self: *Brainf) !void {
+    self.pointer[self.currLoc].* -= 1;
+  }
+
+  fn input(self: *Brainf) !void {
+
+  }
+
+  fn writeBuffer(self: *Brainf) !void {
+    
   }
 
   // change source to token before parsing
