@@ -13,10 +13,11 @@ pub fn main() !void {
     const file: []const u8 = args[1];
     const content = try readFile(alloc, file);
     
-    bf.Brainf.init(alloc);
-    const tokens = bf.Brainf.tokenize(content);
-
-    bf.Brainf.parse(tokens);
+    var brainfuck = try bf.Brainf.init(alloc);
+    defer brainfuck.deinit();
+    const tokens: []bf.Token = try brainfuck.tokenize(content);
+    
+    std.debug.print("{}\n", .{tokens.len});
   } else {
     std.log.warn("missing brainfuck file", .{});
   }

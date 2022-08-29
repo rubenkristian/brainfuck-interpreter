@@ -16,25 +16,25 @@ pub fn build(b: *std.build.Builder) void {
     brainf.setBuildMode(mode);
     brainf.install();
 
-    const brainfuck = b.addExecutable("brainfuck", "src/main.zig");
-    brainfuck.setTarget(target);
-    brainfuck.setBuildMode(mode);
-    brainfuck.install();
+    // const brainfuck = b.addExecutable("brainfuck", "src/main.zig");
+    // brainfuck.setTarget(target);
+    // brainfuck.setBuildMode(mode);
+    // brainfuck.install();
 
     const run_brainf = brainf.run();
     run_brainf.step.dependOn(b.getInstallStep());
 
-    const run_brainfuck = brainfuck.run();
-    run_brainfuck.step.dependOn(b.getInstallStep());
+    // const run_brainfuck = brainfuck.run();
+    // run_brainfuck.step.dependOn(b.getInstallStep());
 
     if (b.args) |args| {
         run_brainf.addArgs(args);
-        run_brainfuck.addArgs(args);
+        // run_brainfuck.addArgs(args);
     }
 
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_brainf.step);
-    run_step.dependOn(&run_brainfuck.step);
+    // run_step.dependOn(&run_brainfuck.step);
 
     const exe_tests = b.addTest("src/main.zig");
     exe_tests.setTarget(target);
