@@ -42,11 +42,26 @@ pub const Brainf = struct {
   }
 
   fn input(self: *Brainf) !void {
+    const in = std.io.getStdIn();
+    var buf = std.io.bufferedReader(in.reader());
 
+    var r = buf.reader();
+
+    var buffer: [1]u8 = undefined;
+    var char = try r.readUntilDelimiterOrEof(&buffer,'\n');
+
+    self.pointer[self.currLoc].* = char;
   }
 
   fn writeBuffer(self: *Brainf) !void {
-    
+    const out = std.io.getStdOut();
+    var buf = std.io.bufferedWriter(out.writer());
+
+    var w = buf.writer();
+
+    try w.print("{c}", .{self.pointer[self.currLoc].*});
+
+    try buf.flush();
   }
 
   // change source to token before parsing
@@ -122,5 +137,6 @@ pub const Brainf = struct {
 
   pub fn deinit(self: *Brainf) void{
     self.tokens.deinit();
+    self.pcodes.deinit();
   }
 };
