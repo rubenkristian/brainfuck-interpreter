@@ -64,8 +64,9 @@ fn readFile(allocator: Allocator, file: []const u8) ReadError![]const u8 {
 test "read file" {
   const allocator = heap.page_allocator;
 
-  const content: []const u8 = try readFile(allocator, "test.bf");
+  const content: []const u8 = try readFile(allocator, "./bf-example/helloworld.bf");
 
+  const expectedContentFile = ">++++++++.[<+++++++++>-]<.\n>++++[<+++++++>-]<+.\n+++++++..\n+++.\n>>++++++[<+++++++>-]<++.\n------------.\n>++++++[<+++++++++>-]<+.\n<.\n+++.\n------.\n--------.\n>>>++++[<++++++++>-]<+.";
   try expect(@TypeOf(content) == []const u8);
-  try expect(std.mem.eql(u8, content, "+++++ +++++ >>++ >>++"));
+  try expect(std.mem.eql(u8, content, expectedContentFile));
 }
