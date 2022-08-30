@@ -219,6 +219,7 @@ pub const Brainf = struct {
   pub fn deinit(self: *Brainf) void{
     self.tokens.deinit();
     self.stakeLoop.deinit();
+    self.allocator.free(self.blocks);
     // self.pcodes.deinit();
   }
 };
