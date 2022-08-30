@@ -11,30 +11,19 @@ pub fn build(b: *std.build.Builder) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
-    const brainf = b.addExecutable("brainf", "src/main.zig");
-    brainf.setTarget(target);
-    brainf.setBuildMode(mode);
-    brainf.install();
+    const exe = b.addExecutable("brainf", "src/main.zig");
+    exe.setTarget(target);
+    exe.setBuildMode(mode);
+    exe.install();
 
-    // const brainfuck = b.addExecutable("brainfuck", "src/main.zig");
-    // brainfuck.setTarget(target);
-    // brainfuck.setBuildMode(mode);
-    // brainfuck.install();
-
-    const run_brainf = brainf.run();
-    run_brainf.step.dependOn(b.getInstallStep());
-
-    // const run_brainfuck = brainfuck.run();
-    // run_brainfuck.step.dependOn(b.getInstallStep());
-
+    const run_cmd = exe.run();
+    run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {
-        run_brainf.addArgs(args);
-        // run_brainfuck.addArgs(args);
+        run_cmd.addArgs(args);
     }
 
     const run_step = b.step("run", "Run the app");
-    run_step.dependOn(&run_brainf.step);
-    // run_step.dependOn(&run_brainfuck.step);
+    run_step.dependOn(&run_cmd.step);
 
     const exe_tests = b.addTest("src/main.zig");
     exe_tests.setTarget(target);
