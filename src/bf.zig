@@ -1,6 +1,8 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
+const Writer = std.io.Writer;
+const BufferedWriter = std.io.BufferedWriter;
 
 pub const Token = enum(u8) { NextPoint=1, PrevPoint=2, InValue=3, DeValue=4, Print=5, Scan=6, LoopOpen=7, LoopClose=8 };
 // pub const PCODE = struct {
@@ -203,6 +205,15 @@ pub const Brainf = struct {
         },
       }
     }
+    
+    const out = std.io.getStdOut();
+    var buf = std.io.bufferedWriter(out.writer());
+
+    var w = buf.writer();
+
+    try w.print("\n", .{});
+
+    try buf.flush();
   }
 
   pub fn deinit(self: *Brainf) void{
