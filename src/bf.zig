@@ -9,7 +9,7 @@ pub const Token = enum(u8) { NextPoint=1, PrevPoint=2, InValue=3, DeValue=4, Pri
 // };
 
 pub const Brainf = struct {
-  pointer: []*u8,
+  blocks: []u8,
   allocator: Allocator,
   tokens: ArrayList(Token),
   // pcodes: ArrayList(PCODE),
@@ -18,7 +18,7 @@ pub const Brainf = struct {
 
   pub fn init(allocator: Allocator) !Brainf {
     return Brainf{
-      .pointer = try allocator.alloc(*u8, 64),
+      .blocks = try allocator.alloc(u8, 64),
       .allocator = allocator,
       .tokens = ArrayList(Token).init(allocator),
       .stakeLoop = ArrayList(usize).init(allocator),
@@ -44,23 +44,23 @@ pub const Brainf = struct {
   }
 
   fn increaseCurrPointer(self: *Brainf) !void {
-    if (self.pointer[self.currLoc].* < 255) {
-      self.pointer[self.currLoc].* += 1;
+    if (self.blocks[self.currLoc] < 255) {
+      self.blocks[self.currLoc] += 1;
     } else {
-      self.pointer[self.currLoc].* = 0;
+      self.blocks[self.currLoc] = 0;
     }
   }
 
   fn decreaseCurrPointer(self: *Brainf) !void {
-    if (self.pointer[self.currLoc].* > 0) {
-      self.pointer[self.currLoc].* -= 1;
+    if (self.blocks[self.currLoc] > 0) {
+      self.blocks[self.currLoc] -= 1;
     } else {
-      self.pointer[self.currLoc].* = 255;
+      self.blocks[self.currLoc] = 255;
     }
   }
 
   fn currPointerZero(self: *Brainf) bool {
-    return self.pointer[self.currLoc].* == 0;
+    return self.blocks[self.currLoc] == 0;
   }
 
   fn input(self: *Brainf) !void {
@@ -72,7 +72,7 @@ pub const Brainf = struct {
     var buffer: [1]u8 = undefined;
     var char = try r.readUntilDelimiterOrEof(&buffer,'\n');
 
-    self.pointer[self.currLoc].* = char;
+    self.blocks[self.currLoc] = char;
   }
 
   fn writeBuffer(self: *Brainf) !void {
@@ -81,7 +81,7 @@ pub const Brainf = struct {
 
     var w = buf.writer();
 
-    try w.print("{c}", .{self.pointer[self.currLoc]});
+    try w.print("{c}", .{self.blocks[self.currLoc]});
 
     try buf.flush();
   }
@@ -120,11 +120,11 @@ pub const Brainf = struct {
 
   // must check
   // after allocation, value in
-  // pub fn reset(self: *Brainf) void {
-  //   for(self.pointer) |_, index| {
-  //     self.pointer[index] = 0;
-  //   }
-  // }
+  pub fn reset(self: *Brainf) void {
+    for(self.blocks) |_, index| {
+      self.blocks[index] = 0;
+    }
+  }
 
   // pub fn parse(self: *Brainf) !void {
   //   var prevToken = undefined;
@@ -207,6 +207,7 @@ pub const Brainf = struct {
 
   pub fn deinit(self: *Brainf) void{
     self.tokens.deinit();
+    self.stakeLoop.deinit();
     // self.pcodes.deinit();
   }
 };

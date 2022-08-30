@@ -39,7 +39,7 @@ pub fn main() !void {
     var brainfuck = try bf.Brainf.init(alloc);
     defer brainfuck.deinit();
 
-    // brainfuck.reset();
+    brainfuck.reset();
     _ = try brainfuck.tokenize(content);
 
     try brainfuck.Interpreter();
