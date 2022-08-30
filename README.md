@@ -12,3 +12,6 @@ Brainfuck interpreter written in ZIG programming language
 
 - Install Zig Compiler (master version)
 - run ```zig build run -- ./bf-example/helloworld.bf```
+
+## EXAMPLE
+![alt text](./screenshot/zig-hello-world.png)
