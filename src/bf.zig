@@ -10,7 +10,20 @@ pub const Token = enum(u8) { NextPoint=1, PrevPoint=2, InValue=3, DeValue=4, Pri
 //   value: u32,
 // };
 
+const ErrorBrain = error {
+  ReaderError,
+  WriterError,
+};
+
 pub const Brainf = struct {
+  const out = std.io.getStdOut();
+  const in = std.io.getStdIn();
+  var bufWriter = std.io.bufferedWriter(out.writer());
+  var bufReader = std.io.bufferedReader(in.reader());
+
+  var w = bufWriter.writer();
+  var r = bufReader.reader();
+
   blocks: []u8,
   allocator: Allocator,
   tokens: ArrayList(Token),
@@ -29,7 +42,7 @@ pub const Brainf = struct {
     };
   }
 
-  fn nextPointer(self: *Brainf) !void {
+  fn nextPointer(self: *Brainf) ErrorBrain!void {
     if (self.currLoc < 63) {
       self.currLoc += 1;
     } else {
@@ -37,7 +50,7 @@ pub const Brainf = struct {
     }
   }
 
-  fn prevPointer(self: *Brainf) !void {
+  fn prevPointer(self: *Brainf) ErrorBrain!void {
     if (self.currLoc > 0) {
       self.currLoc -= 1;
     } else {
@@ -45,7 +58,7 @@ pub const Brainf = struct {
     }
   }
 
-  fn increaseCurrPointer(self: *Brainf) !void {
+  fn increaseCurrPointer(self: *Brainf) ErrorBrain!void {
     if (self.blocks[self.currLoc] < 255) {
       self.blocks[self.currLoc] += 1;
     } else {
@@ -53,7 +66,7 @@ pub const Brainf = struct {
     }
   }
 
-  fn decreaseCurrPointer(self: *Brainf) !void {
+  fn decreaseCurrPointer(self: *Brainf) ErrorBrain!void {
     if (self.blocks[self.currLoc] > 0) {
       self.blocks[self.currLoc] -= 1;
     } else {
@@ -65,27 +78,27 @@ pub const Brainf = struct {
     return self.blocks[self.currLoc] == 0;
   }
 
-  fn input(self: *Brainf) !void {
-    const in = std.io.getStdIn();
-    var buf = std.io.bufferedReader(in.reader());
+  fn input(self: *Brainf) ErrorBrain!void {
+    w.print("Input for pointer in index {} ``only take 1 character`` ", .{self.currLoc}) catch {
+      return error.WriterError;
+    };
 
-    var r = buf.reader();
+    bufWriter.flush() catch {
+      return error.WriterError;
+    };
 
-    var buffer: [1]u8 = undefined;
-    var char = try r.readUntilDelimiterOrEof(&buffer,'\n');
+    var buffer: [2]u8 = undefined;
+    _ = r.readUntilDelimiterOrEof(&buffer,'\n') catch {
+      return error.ReaderError;
+    };
 
-    self.blocks[self.currLoc] = char;
+    self.blocks[self.currLoc] = buffer[0];
   }
 
-  fn writeBuffer(self: *Brainf) !void {
-    const out = std.io.getStdOut();
-    var buf = std.io.bufferedWriter(out.writer());
-
-    var w = buf.writer();
-
-    try w.print("{c}", .{self.blocks[self.currLoc]});
-
-    try buf.flush();
+  fn writeBuffer(self: *Brainf) ErrorBrain!void {
+    w.print("{c}", .{self.blocks[self.currLoc]}) catch {
+      return error.WriterError;
+    };
   }
 
   // change source to token before parsing
@@ -167,34 +180,14 @@ pub const Brainf = struct {
     while (index < maxRows) {
       const token = self.tokens.items[index];
       
-      switch (token) {
-        .InValue => {
-          try self.increaseCurrPointer();
-          index += 1;
-        },
-        .DeValue => {
-          try self.decreaseCurrPointer();
-          index += 1;
-        },
-        .NextPoint => {
-          try self.nextPointer();
-          index += 1;
-        },
-        .PrevPoint => {
-          try self.prevPointer();
-          index += 1;
-        },
-        .Print => {
-          try self.writeBuffer();
-          index += 1;
-        },
-        .Scan => {
-          index += 1;
-        },
-        .LoopOpen => {
-          try self.stakeLoop.append(index);
-          index += 1;
-        },
+      _ = switch (token) {
+        .InValue => self.increaseCurrPointer(),
+        .DeValue => self.decreaseCurrPointer(),
+        .NextPoint => self.nextPointer(),
+        .PrevPoint => self.prevPointer(),
+        .Print => self.writeBuffer(),
+        .Scan => self.input(),
+        .LoopOpen => self.stakeLoop.append(index),
         .LoopClose => {
           if (self.currPointerZero()) {
             _ = self.stakeLoop.pop();
@@ -203,17 +196,19 @@ pub const Brainf = struct {
             index = self.stakeLoop.pop();
           }
         },
+      } catch {
+        std.log.err("Interpreter interrupted", .{});
+        return;
+      };
+
+      if (token != Token.LoopClose) {
+        index += 1;
       }
     }
-    
-    const out = std.io.getStdOut();
-    var buf = std.io.bufferedWriter(out.writer());
-
-    var w = buf.writer();
 
     try w.print("\n", .{});
 
-    try buf.flush();
+    try bufWriter.flush();
   }
 
   pub fn deinit(self: *Brainf) void{
