@@ -18,11 +18,13 @@ const ErrorBrain = error {
 pub const Brainf = struct {
   const out = std.io.getStdOut();
   const in = std.io.getStdIn();
+  var bufAsk = std.io.bufferedWriter(out.writer());
   var bufWriter = std.io.bufferedWriter(out.writer());
   var bufReader = std.io.bufferedReader(in.reader());
 
   var w = bufWriter.writer();
   var r = bufReader.reader();
+  var ask = bufAsk.writer();
 
   blocks: []u8,
   allocator: Allocator,
@@ -79,11 +81,11 @@ pub const Brainf = struct {
   }
 
   fn input(self: *Brainf) ErrorBrain!void {
-    w.print("Input for pointer in index {} ``only take 1 character`` ", .{self.currLoc}) catch {
+    ask.print("\rInput for pointer in index {} ``only take 1 character`` ", .{self.currLoc}) catch {
       return error.WriterError;
     };
 
-    bufWriter.flush() catch {
+    bufAsk.flush() catch {
       return error.WriterError;
     };
 
@@ -206,7 +208,7 @@ pub const Brainf = struct {
       }
     }
 
-    try w.print("\n", .{});
+    try w.print("\r\n", .{});
 
     try bufWriter.flush();
   }
