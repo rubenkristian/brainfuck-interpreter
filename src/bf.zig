@@ -81,7 +81,7 @@ pub const Brainf = struct {
   }
 
   fn input(self: *Brainf) ErrorBrain!void {
-    ask.print("\rInput for pointer in index {} ``only take 1 character`` ", .{self.currLoc}) catch {
+    ask.print("\rInput to block with index {} ``only take 1 character`` ", .{self.currLoc}) catch {
       return error.WriterError;
     };
 
