@@ -4,7 +4,6 @@ Brainfuck is an esoteric programming language
 
 - [x] Brainfuck interpreter CLI
   - [x] handle scan "," token
-- [ ] Brainfuck interpreter wasm
 
 Brainfuck interpreter written in ZIG programming language
 
