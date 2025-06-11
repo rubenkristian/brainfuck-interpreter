@@ -138,8 +138,10 @@ pub const Brainf = struct {
     // must check
     // after allocation, value in
     pub fn reset(self: *Brainf) void {
-        for (self.blocks) |index| {
-            self.blocks[index] = 0;
+        var i: usize = 0;
+
+        while (i < self.blocks.len) : (i += 1) {
+            self.blocks[i] = 0;
         }
     }
 
@@ -195,7 +197,7 @@ pub const Brainf = struct {
                         _ = self.stakeLoop.pop();
                         index += 1;
                     } else {
-                        index = self.stakeLoop.pop() orelse 0;
+                        index = self.stakeLoop.pop().?;
                     }
                 },
             } catch {
