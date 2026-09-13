@@ -1,4 +1,4 @@
-### BRAINFUCK INTERPRETER (STATUS: ALFA)
+### BRAINFUCK INTERPRETER
 
 Brainfuck is an esoteric programming language
 
